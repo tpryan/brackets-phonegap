@@ -44,10 +44,13 @@ define(function (require, exports, module) {
         ProjectListPanelTemplate = require("text!templates/project-panel-list.html"),
         ProjectNewTemplate = require("text!templates/new-project.html"),
         ProjectDeleteTemplate = require("text!templates/delete-project.html"),
+        ToolbarButtonTemplate = require("text!templates/toolbar-button.html"),
         LoginTemplate       = require("text!templates/login.html");
     
-        //LoginTemplate       = require("text!templates/hardcodedlogin.html")
+        LoginTemplate       = require("text!templates/hardcodedlogin.html")
         
+   
+    
     var CommandManager = brackets.getModule("command/CommandManager"),
 		ProjectManager = brackets.getModule("project/ProjectManager"),
 		EditorManager  = brackets.getModule("editor/EditorManager"),
@@ -97,7 +100,6 @@ define(function (require, exports, module) {
 	    var PGB_COMMAND_ID = "phonegap.build";   // package-style naming to avoid collisions
 	    CommandManager.register(Strings.COMMAND_NAME, PGB_COMMAND_ID, eve.f("pgb.button.click"));
 	
-		var button = $("<a>");
 		
 		function zipProject(id) {
 			var rootPath = ProjectManager.getProjectRoot().fullPath,
@@ -236,17 +238,11 @@ define(function (require, exports, module) {
 		
 		ExtensionUtils.loadStyleSheet(module, "css/pgb.css");
 		
-        var pgbhost = $('<div id="pgb-btn-holder"></div>');
-        
-		button.attr({
-			title: Strings.COMMAND_NAME,
-			id: "pgb-btn",
-			href: "#",
-			"class": "disabled"
-		}).click(eve.f("pgb.button.click"));
-        
-        pgbhost.insertAfter("#toolbar-go-live");
-        pgbhost.html(button);
+        var m_opts_toolbar_button = {Strings: Strings};
+        var html_toolbar_button = Mustache.render(ToolbarButtonTemplate, m_opts_toolbar_button);
+        var $button = $(html_toolbar_button);    
+        $button.appendTo($("#main-toolbar .buttons"));
+        $("#pgb-btn").click(eve.f("pgb.button.click"));
         
         
         var m_opts_panel = {Strings: Strings};
@@ -303,8 +299,6 @@ define(function (require, exports, module) {
                 
                 $("#pgb-btn-holder").popover(options);
                 $("#pgb-btn-holder").popover("show");
-                $("#pgb-btn-holder + .popover").css("top", "20px");
-                $("#pgb-btn-holder + .popover .arrow").css("top", "40%");
                 var doIt = function() {
                     $("#pgb-btn-holder").popover("destroy");
                 }
@@ -319,7 +313,7 @@ define(function (require, exports, module) {
 
 		eve.on("pgb.status", function () {
 			var type = eve.nt().split(/[\.\/]/)[2];
-			button[0].className = type;
+            $("#pgb-btn").className = type;
 			anim[type == "progress" ? "show" : "hide" ]();
 		});
 		eve.on("pgb.login", function (login, password) {
@@ -454,17 +448,8 @@ define(function (require, exports, module) {
 				qr.addData("https://build.phonegap.com" + data + "?qr_key=" + token);
 				qr.make();
 				qr = qr.createSVGPath(4);
-				var $qrcode = $(format('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="215" height="240">\
-				<defs>\
-					<filter id="blur" x="-20" y="-20" width="30" height="30">\
-						<feGaussianBlur in="SourceGraphic" stdDeviation="10"/>\
-					</filter>\
-				</defs>\
-			<g transform="translate(20, 20)">\
-				<path id="shadow" filter="url(#blur)" opacity=".75" d="M10,183.257c-8.284,0-15-6.716-15-15v-148c0-8.284,6.716-15,15-15h148c8.284,0,15,6.716,15,15v148c0,8.284-6.716,15-15,15h-40.308l-33.692,24.18l-33.692-24.18H10z"/>\
-				<path fill="#fff" d="M10,173c-8.284,0-15-6.716-15-15v-148c0-8.284,6.716-15,15-15h148c8.284,0,15,6.716,15,15v148c0,8.284-6.716,15-15,15h-40.308l-33.692,46.436l-33.692-46.436H10z"/>\
-			</g>\
-				<path d="{d}" transform="translate(30, 30)"/></svg>', qr));
+                var qrcode_holder = require("text!svg/qrcode-holder.svg");
+				var $qrcode = $(format(qrcode_holder, qr));
 				var spanOffset = $(span).offset();
 				$qrcode.css({
 					position: "absolute",
