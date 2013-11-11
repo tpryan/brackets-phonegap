@@ -275,7 +275,7 @@ define(function (require, exports, module) {
 		}
 
 		/**
-		 * Displays an alert box between the menu bar and the editor.
+		 * Displays an alert box that pops out of the sidebar icon.
 		 *
 		 * @message     The text in the alert box. HTML tags are ok.
 		 * @showButtons Whether or not to show the OK and Cancel buttons.
@@ -294,17 +294,54 @@ define(function (require, exports, module) {
                 
                 $("#pgb-btn-holder").popover(options);
                 $("#pgb-btn-holder").popover("show");
-                var doIt = function() {
-                    $("#pgb-btn-holder").popover("destroy");
+                
+                if (autoClose) {
+                    var doIt = function() {
+                        $("#pgb-btn-holder").popover("destroy");
+                    }
+                    setTimeout(doIt, 5000);
                 }
-                setTimeout(doIt, 5000);
-            
 		}
 
 		function toggleRebuildLabels(id) {
 			$("#rebuild-link-" + id).toggle();
 			$("#rebuilding-text-" + id).toggle();
 		}
+        
+        function massageProjectList(projects) {
+             var projectsMassaged = [];
+            
+            
+            for (var i = 0; i < projects.length; i++) {
+                var app = projects[i];
+                var appMassaged = {};
+                
+                if (app.icon.filename === null) {
+                    appMassaged.iconlink = require.toUrl('./svg/icon-pg.svg');
+                } else {
+                    appMassaged.iconlink = "https://build.phonegap.com" + app.icon.link;
+                }
+                appMassaged.id = app.id;
+                appMassaged.title = app.title;
+                appMassaged.platforms = [];
+                
+                platforms.forEach(function(val, index) {
+                    var platform = {};
+                    platform.os = val;
+                    platform.download = app.download[val];
+                    if (app.status[val] === null) {
+                        platform.status = "error";
+                    } else {
+                        platform.status = app.status[val];
+                    }    
+                    appMassaged.platforms.push(platform);
+                });
+                
+                projectsMassaged.push(appMassaged);
+            
+            }
+            return projectsMassaged;  
+        }    
 
 		eve.on("pgb.status", function () {
 			var type = eve.nt().split(/[\.\/]/)[2];
@@ -392,36 +429,9 @@ define(function (require, exports, module) {
 		eve.on("pgb.success.list", function (json) {
 			json.apps.sort(function (a,b) {if (a.title < b.title) return -1; if (a.title > b.title) return 1; return 0; });
             projects = json.apps;
-            var projectsMassaged = [];
             
+            var projectsMassaged = massageProjectList(projects);
             
-            for (var i = 0; i < projects.length; i++) {
-                var app = projects[i];
-                var appMassaged = {};
-
-                if (app.icon.filename === null) {
-                    appMassaged.iconlink = require.toUrl('./svg/icon-pg.svg');
-                } else {
-                    appMassaged.iconlink = "https://build.phonegap.com" + app.icon.link;
-                }
-                appMassaged.id = app.id;
-                appMassaged.title = app.title;
-                appMassaged.platforms = [];
-                
-                platforms.forEach(function(val, index) {
-                    var platform = {};
-                    platform.os = val;
-                    platform.download = app.download[val];
-                    if (app.status[val] === null) {
-                        platform.status = "error";
-                    } else {
-                        platform.status = app.status[val];
-                    }    
-                    appMassaged.platforms.push(platform);
-			     });
-                projectsMassaged.push(appMassaged);
-                
-            }
             var m_opts_project_list = {Strings:Strings, projects: projectsMassaged};
             var html_project_list = Mustache.render(ProjectListPanelTemplate, m_opts_project_list);
             $(".pgb-table-container").html(html_project_list);
