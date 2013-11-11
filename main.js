@@ -294,8 +294,10 @@ define(function (require, exports, module) {
                 
                 $("#pgb-btn-holder").popover(options);
                 $("#pgb-btn-holder").popover("show");
-                
-                if (autoClose) {
+            
+                console.log(arguments);
+            
+                if (autoClose === true) {
                     var doIt = function() {
                         $("#pgb-btn-holder").popover("destroy");
                     }
@@ -421,7 +423,7 @@ define(function (require, exports, module) {
 			pgMenu.addMenuItem(Menus.DIVIDER);
 			pgMenu.addMenuItem(PGB_BUILD_COMMAND_ID);
 
-			showAlert(Strings.LOGIN_SUCCESS_MESSAGE + Strings.LINK_PROJECT_MENU_ITEM, false, false);
+			showAlert(Strings.LOGIN_SUCCESS_MESSAGE + Strings.LINK_PROJECT_MENU_ITEM, false, null, true);
 
 			eve("pgb.status.normal");
 			eve("pgb.list");
@@ -520,7 +522,7 @@ define(function (require, exports, module) {
         eve.on("pgb.close.link", function(action) {
             console.log(brackets_phonegap_linked_project_Id);
         	if (action === Dialogs.DIALOG_BTN_OK) {
-                showAlert(Strings.LINK_SUCCESSFUL_MESSAGE + Strings.SEND_FILES_MENU_ENTRY + ".", false, null, false);
+                showAlert(Strings.LINK_SUCCESSFUL_MESSAGE + Strings.SEND_FILES_MENU_ENTRY + ".", false, null, true);
 			}
         });
          eve.on("pgb.close.new", function(action) {
@@ -530,13 +532,13 @@ define(function (require, exports, module) {
         		// NO-OP. Probably don't have to do anything.
         	}
 			else if (action === Dialogs.DIALOG_BTN_OK) {
-				showAlert(Strings.NEW_ALERT_MESSAGE + " <em>" + val +  "</em>.", false, null, false);
+				showAlert(Strings.NEW_ALERT_MESSAGE + " <em>" + val +  "</em>.", false, null, true);
 				updateApp(val);
 			}
         });
         eve.on("pgb.update.confirm", function() {
         	if (!brackets_phonegap_linked_project_Id) {
-        		showAlert(Strings.PROJECT_NOT_LINKED_MESSAGE + Strings.LINK_PROJECT_MENU_ITEM, false, null, false);
+        		showAlert(Strings.PROJECT_NOT_LINKED_MESSAGE + Strings.LINK_PROJECT_MENU_ITEM, false, null, true);
         		return;
         	}
             var title = Strings.SEND_FILES_MENU_ENTRY;
