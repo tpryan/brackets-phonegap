@@ -371,11 +371,11 @@ define(function (require, exports, module) {
 		
 		eve.on("pgb.before.login", function () {
             
+            //Render the login form and add it to the panel. 
             var m_opts = {Strings: Strings};
             var renderedTemplate = Mustache.render(LoginTemplate, m_opts);
-            
-            
 			$(".pgb-table-container").append(renderedTemplate);
+
             var $form = $("#pgb-login-form");
 			var inputs = $("input", $form);
 			$form.on("submit", function (e) {
@@ -388,7 +388,6 @@ define(function (require, exports, module) {
 			EditorManager.resizeEditor();
 		});
 		eve.on("pgb.panel.close", function () {
-            console.log("Panel pgb.panel.close called")
 			$panel.hide();
 			EditorManager.resizeEditor();
 		});
