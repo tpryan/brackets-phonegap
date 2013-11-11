@@ -345,6 +345,9 @@ define(function (require, exports, module) {
             return projectsMassaged;  
         }    
 
+        
+        
+        // All of the EVE Events should be down here. 
 		eve.on("pgb.status", function () {
 			var type = eve.nt().split(/[\.\/]/)[2];
             $("#pgb-btn").className = type;
