@@ -199,9 +199,12 @@
     background-color: #FFF6E0;
 }
 
-#pgb-btn-holder + .popover .arrow{
-    background-color: #FFF6E0;
+#pgb-btn-holder + .popover.left .arrow:after{
+    border-left-color: #FFF6E0;
     
+}    
+#pgb-btn-holder + .popover .arrow{
+    background-color: transparent;
 }
 
 #pgb-panel-project-list-table img{

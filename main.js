@@ -295,8 +295,6 @@ define(function (require, exports, module) {
                 $("#pgb-btn-holder").popover(options);
                 $("#pgb-btn-holder").popover("show");
             
-                console.log(arguments);
-            
                 if (autoClose === true) {
                     var doIt = function() {
                         $("#pgb-btn-holder").popover("destroy");
