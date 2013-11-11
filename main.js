@@ -238,6 +238,7 @@ define(function (require, exports, module) {
 		
 		ExtensionUtils.loadStyleSheet(module, "css/pgb.css");
 		
+        // Add toolbar button to the interface
         var m_opts_toolbar_button = {Strings: Strings};
         var html_toolbar_button = Mustache.render(ToolbarButtonTemplate, m_opts_toolbar_button);
         var $button = $(html_toolbar_button);    
@@ -245,11 +246,10 @@ define(function (require, exports, module) {
         $("#pgb-btn").click(eve.f("pgb.button.click"));
         
         
+        // Build the panel frame and add it to the interface hidden
         var m_opts_panel = {Strings: Strings};
         var html_panel = Mustache.render(PanelTemplate, m_opts_panel);
         var $panel = PanelManager.createBottomPanel("brackets-phonegap", $(html_panel));
-
-        var anim = $("#pgb-anim", $panel);
 		$("#pgb-panel .close").click(function(){eve("pgb.panel.close");});
 
 		var token,
@@ -349,6 +349,7 @@ define(function (require, exports, module) {
 		eve.on("pgb.status", function () {
 			var type = eve.nt().split(/[\.\/]/)[2];
             $("#pgb-btn").className = type;
+            var anim = $("#pgb-anim");
 			anim[type == "progress" ? "show" : "hide" ]();
 		});
 		eve.on("pgb.login", function (login, password) {
