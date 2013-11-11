@@ -429,47 +429,49 @@ define(function (require, exports, module) {
             var m_opts_project_list = {Strings:Strings, projects: projectsMassaged};
             var html_project_list = Mustache.render(ProjectListPanelTemplate, m_opts_project_list);
             $(".pgb-table-container").html(html_project_list);
-            $(".pgb-table-container").click(eve.f("pgb.click"));
             
+            
+            //Powering all of the click handlers for the Project panel list. 
             $(".project-link").click(function (e) {
                 eve("pgb.url.open", null, $(e.target).attr("data-url"));
             });
-		});
-		eve.on("pgb.click", function (e) {
-			console.log("pgb.click");
-			console.log(e.target);
-			var span = e.target;
-			if (!String(span.id).indexOf("pgb-app")) {
-				var data = $(span).attr("data-download");
-				if (data == {}) {
-					return;
-				}
-				var qr = qrcode(5, "L");
-				qr.addData("https://build.phonegap.com" + data + "?qr_key=" + token);
-				qr.make();
-				qr = qr.createSVGPath(4);
-                var qrcode_holder = require("text!svg/qrcode-holder.svg");
-				var $qrcode = $(format(qrcode_holder, qr));
-				var spanOffset = $(span).offset();
-				$qrcode.css({
-					position: "absolute",
-					zIndex: 2000,
-					top: spanOffset.top - 240,
-					left: spanOffset.left - 94
-				}).appendTo(window.document.body);
-				setTimeout(function () {
-					$(window.document).one("click", function () {
-						$qrcode.remove();
-					});
-				});				
-			}
-			if (span.className.indexOf("pgb-rebuild") > -1) {
-				eve("pgb.rebuild", null, span.getAttribute("data-id"));
-			}
-
-			if (span.className.indexOf("pgb-delete") > -1) {
-				eve("pgb.delete", null, span.getAttribute("data-id"));
-			} 
+            
+            $(".pgb-rebuild").click(function (e) {
+                console.log("Rebuild called", $(e.target).attr("data-id"));
+                eve("pgb.rebuild", null, $(e.target).attr("data-id"));
+            });
+            
+            $(".pgb-delete").click(function (e) {
+                eve("pgb.delete", null, $(e.target).attr("data-id"));
+            });
+            
+            $(".pgb-app-qr-target").click(function (e) {
+                var span = e.target;
+                if (!String(span.id).indexOf("pgb-app")) {
+                    var data = $(span).attr("data-download");
+                    if (data == {}) {
+                        return;
+                    }
+                    var qr = qrcode(5, "L");
+                    qr.addData("https://build.phonegap.com" + data + "?qr_key=" + token);
+                    qr.make();
+                    qr = qr.createSVGPath(4);
+                    var qrcode_holder = require("text!svg/qrcode-holder.svg");
+                    var $qrcode = $(format(qrcode_holder, qr));
+                    var spanOffset = $(span).offset();
+                    $qrcode.css({
+                        position: "absolute",
+                        zIndex: 2000,
+                        top: spanOffset.top - 240,
+                        left: spanOffset.left - 94
+                    }).appendTo(window.document.body);
+                    setTimeout(function () {
+                        $(window.document).one("click", function () {
+                            $qrcode.remove();
+                        });
+                    });				
+                }
+            });
 		});
 		eve.on("pgb.success.projectinfo", function (json) {
 			console.warn(2, json);
@@ -497,7 +499,7 @@ define(function (require, exports, module) {
 			console.log("pgb.failure.rebuild");
 		});
         eve.on("pgb.url.open", function(url) {
-            brackets.app.openURLInDefaultBrowser(function (err) {}, url);
+            brackets.app.openURLInDefaultBrowser(url, function (err) {});
         });
         eve.on("pgb.link", function() {
             var m_opts = {Strings: Strings, projects:projects, Dialogs: Dialogs};
