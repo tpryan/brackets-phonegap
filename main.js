@@ -47,7 +47,7 @@ define(function (require, exports, module) {
         ToolbarButtonTemplate = require("text!templates/toolbar-button.html"),
         LoginTemplate       = require("text!templates/login.html");
     
-        LoginTemplate       = require("text!templates/hardcodedlogin.html")
+    LoginTemplate       = require("text!templates/hardcodedlogin.html");
         
    
     
@@ -250,14 +250,9 @@ define(function (require, exports, module) {
         var $panel = PanelManager.createBottomPanel("brackets-phonegap", $(html_panel));
 
         var anim = $("#pgb-anim", $panel);
-		$(".close", $panel).click(eve.f("pgb.panel.close"));
+		$("#pgb-panel .close").click(function(){eve("pgb.panel.close");});
 
-		var $tableContainer = $(".table-container", $panel),
-			$projectContainer = $("<div>").attr("id", "pgb-link-container"),
-			$newContainer = $("<div>").attr("id", "pgb-new-item-dialog-container"),
-			panelOpened,
-			token,
-			linkedProjectId,
+		var token,
 			pendingDelete,
             projects,
 			platforms = ["ios", "android", "winphone", "blackberry", "webos", "symbian"];
@@ -352,6 +347,7 @@ define(function (require, exports, module) {
 			EditorManager.resizeEditor();
 		});
 		eve.on("pgb.panel.close", function () {
+            console.log("Panel pgb.panel.close called")
 			$panel.hide();
 			EditorManager.resizeEditor();
 		});
@@ -518,7 +514,6 @@ define(function (require, exports, module) {
 			}
         });
          eve.on("pgb.close.new", function(action) {
-            console.log(brackets_phonegap_new_project, action);
              
         	var val = brackets_phonegap_new_project;
         	if (action === Dialogs.DIALOG_BTN_CANCEL) {
